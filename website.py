@@ -2,16 +2,15 @@ from typing import List
 import requests, bs4, sys, re
 
 class Website:
-	"""A class that will take a website's home page as an
-	entry point and generates all of the links up to a limit
-	that can be set on generation.
-	This class will also have methods to get all relevant text
-	from all of the gathered links.
+	"""A class that takes a website's home page as an
+	entry point and generates all of the links up to a
+	predefined limit which can be changed or made
+	unlimited by setting it to 0
 	"""
 
 	links = []
 	home_page = ""
-	def __init__(self, home_page: str, search_limit=10000):
+	def __init__(self, home_page: str, search_limit: int=100):
 		self.home_page = home_page
 		self.links = self._get_links_list(search_limit)
 
@@ -26,9 +25,11 @@ class Website:
 			try:
 				for link in unfollowed_links:
 					sys.stderr.write(str((len(followed_links) + len(unfollowed_links) + len(buffer_unfollowed_links))) + '\n')
+					# exit if we have exceeded the limit
 					if limit and (len(followed_links) + len(unfollowed_links) + len(buffer_unfollowed_links) > limit):
 						return followed_links + unfollowed_links + buffer_unfollowed_links
 
+					# filling the buffer of unfollowed links
 					buffer_unfollowed_links += self._get_page_links(link)
 				
 				followed_links += unfollowed_links # add links to followed
@@ -38,6 +39,7 @@ class Website:
 					return followed_links + unfollowed_links + buffer_unfollowed_links
 				elif not unfollowed_links:
 					return followed_links
+			# allows for early exit of link gathering
 			except KeyboardInterrupt as e:
 				break
 
@@ -50,23 +52,27 @@ class Website:
 		links = s.find_all('a')
 		for link in links:
 			try:
+				# makes sure is a valid link and not
+				# a mailto or some other weird format
 				if link['href'][:4] == 'http':
 					out.append(link['href'])
+			# link tag might not have a href
 			except KeyError as e:
 				sys.stderr.write(str(e)+'\n')
+			# allows for early exit of link gathering
 			except KeyboardInterrupt as e:
 				break
 		return out
 
-	def _get_page_text(self, page_link):
+	def _get_page_text(self, page_link: str) -> str:
 		p = requests.get(page_link)
 		soup = bs4.BeautifulSoup(p.text, 'html.parser')
-		[s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title', 'li', 'footer'])]
+		[s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title', 'li', 'footer', 'table'])]
 		return '\n'.join(e.strip() for e in soup.getText().split('\n') if e.strip())
 
 
 if __name__ == "__main__":
-	ws = Website("https://www.independent.ie/")
+	ws = Website("https://stackoverflow.com/")
 	sys.stderr.write("printing\n")
 	for link in ws.links:
 		print(ws._get_page_text(link))

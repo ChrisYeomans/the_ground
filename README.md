@@ -3,13 +3,13 @@ A program that scrapes lots of news and forum sites to find out what people are 
 
 
 ## Done:
+* make a function the traverses all/limited pages of a site
+* make a function to extract all relevant text which is site agnosic
 
 ## In Progress:
-* make a function the traverses all/limited pages of a site
+* rewrite the link collecting functions with sets to prevent repeats
 
 ## TODO:
 * get a big list of sites to scrape
-* make a function to extract all relevant text which is site agnosic
-* make a function to detect language idioms and syntax
 * take a name and give out related words and frequencies
 * make a ui
