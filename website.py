@@ -7,7 +7,7 @@ class Website:
 	predefined limit which can be changed or made
 	unlimited by setting it to 0
 	"""
-
+	seen_links = {}
 	links = []
 	home_page = ""
 	def __init__(self, home_page: str, search_limit: int=100):
@@ -54,7 +54,8 @@ class Website:
 			try:
 				# makes sure is a valid link and not
 				# a mailto or some other weird format
-				if link['href'][:4] == 'http':
+				if link['href'][:4] == 'http' and link['href'] not in self.seen_links:
+					self.seen_links[link['href']] = 1
 					out.append(link['href'])
 			# link tag might not have a href
 			except KeyError as e:
@@ -72,7 +73,7 @@ class Website:
 
 
 if __name__ == "__main__":
-	ws = Website("https://stackoverflow.com/")
+	ws = Website("https://www.independent.ie/")
 	sys.stderr.write("printing\n")
 	for link in ws.links:
 		print(ws._get_page_text(link))
