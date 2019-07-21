@@ -10,17 +10,17 @@ class Website:
 	seen_links = {}
 	links = []
 	home_page = ""
-	def __init__(self, home_page: str, search_limit: int=100):
+	def __init__(self, home_page: str, search_limit: int=100, keep_to_site: bool=False):
 		self.home_page = home_page
-		self.links = self._get_links_list(search_limit)
+		self.links = self._get_links_list(search_limit, keep_to_site)
 
-	def _get_links_list(self, limit: int) -> List[str]:
+	def _get_links_list(self, limit: int, keep_to_site: bool) -> List[str]:
 		buffer_unfollowed_links = []
 		unfollowed_links = []
 		followed_links = []
-		unfollowed_links = self._get_page_links(self.home_page)
+		unfollowed_links = self._get_page_links(self.home_page, keep_to_site)
 
-		#basically just keep going until you hit the limit or you run out of links
+		# basically just keep going until you hit the limit or you run out of links
 		while True:
 			try:
 				for link in unfollowed_links:
@@ -30,7 +30,7 @@ class Website:
 						return followed_links + unfollowed_links + buffer_unfollowed_links
 
 					# filling the buffer of unfollowed links
-					buffer_unfollowed_links += self._get_page_links(link)
+					buffer_unfollowed_links += self._get_page_links(link, keep_to_site)
 				
 				followed_links += unfollowed_links # add links to followed
 				unfollowed_links = buffer_unfollowed_links # move the buffer in
@@ -45,7 +45,7 @@ class Website:
 
 		return followed_links + unfollowed_links + buffer_unfollowed_links
 
-	def _get_page_links(self, page: str) -> List[str]:
+	def _get_page_links(self, page: str, keep_to_site: bool) -> List[str]:
 		out = []
 		p = requests.get(page)
 		s = bs4.BeautifulSoup(p.text, 'html.parser')
@@ -55,8 +55,9 @@ class Website:
 				# makes sure is a valid link and not
 				# a mailto or some other weird format
 				if link['href'][:4] == 'http' and link['href'] not in self.seen_links:
-					self.seen_links[link['href']] = 1
-					out.append(link['href'])
+					if not keep_to_site or page.split(".")[1] == link.split(".")[1]:
+						self.seen_links[link['href']] = 1
+						out.append(link['href'])
 			# link tag might not have a href
 			except KeyError as e:
 				sys.stderr.write(str(e)+'\n')
