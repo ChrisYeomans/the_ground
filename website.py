@@ -1,5 +1,5 @@
 from typing import List
-import requests, bs4, sys, re
+import requests, bs4, sys
 
 class Website:
 	"""A class that takes a website's home page as an
@@ -24,7 +24,6 @@ class Website:
 		while True:
 			try:
 				for link in unfollowed_links:
-					sys.stderr.write(str((len(followed_links) + len(unfollowed_links) + len(buffer_unfollowed_links))) + '\n')
 					# exit if we have exceeded the limit
 					if limit and (len(followed_links) + len(unfollowed_links) + len(buffer_unfollowed_links) > limit):
 						return followed_links + unfollowed_links + buffer_unfollowed_links
@@ -78,4 +77,3 @@ if __name__ == "__main__":
 	sys.stderr.write("printing\n")
 	for link in ws.links:
 		print(ws._get_page_text(link))
-	
