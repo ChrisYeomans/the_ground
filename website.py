@@ -7,9 +7,11 @@ class Website:
 	predefined limit which can be changed or made
 	unlimited by setting it to 0
 	"""
+
 	seen_links = {}
 	links = []
 	home_page = ""
+
 	def __init__(self, home_page: str, search_limit: int=100, keep_to_site: bool=False):
 		self.home_page = home_page
 		self.links = self._get_links_list(search_limit, keep_to_site)
@@ -68,7 +70,7 @@ class Website:
 	def _get_page_text(self, page_link: str) -> str:
 		p = requests.get(page_link)
 		soup = bs4.BeautifulSoup(p.text, 'html.parser')
-		[s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title', 'li', 'footer', 'table'])]
+		[s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title', 'footer', 'li', 'table'])]
 		return '\n'.join(e.strip() for e in soup.getText().split('\n') if e.strip())
 
 
