@@ -1,11 +1,7 @@
 from typing import List
 from website import Website
-<<<<<<< Updated upstream
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-import sys, nltk, nltk.book
-=======
 import sys, nltk, nltk.book, collections
->>>>>>> Stashed changes
 
 class Ground:
 	"""This class generates a number
@@ -140,11 +136,5 @@ def get_wordnet_pos(word):
     return tag_dict.get(tag, nltk.corpus.wordnet.NOUN)
 
 if __name__ == "__main__":
-<<<<<<< Updated upstream
 	gd = Ground(keep_to_sites=True, search_limit=1)
 	gd.get_sentiment("trump")
-	
-=======
-	g = Ground('text.txt')
-	print(g.get_related_terms('trump'))
->>>>>>> Stashed changes
