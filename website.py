@@ -16,6 +16,11 @@ class Website:
 		self.home_page = home_page
 		self.links = self._get_links_list(search_limit, keep_to_site)
 
+	"""def __init__(self, home_page: str, links: List[str]):
+		self.links = links
+		for link in links:"""
+
+
 	def _get_links_list(self, limit: int, keep_to_site: bool) -> List[str]:
 		buffer_unfollowed_links = []
 		unfollowed_links = []
@@ -48,7 +53,7 @@ class Website:
 
 	def _get_page_links(self, page: str, keep_to_site: bool) -> List[str]:
 		out = []
-		p = requests.get(page)
+		p = requests.get(page, verify=False)
 		s = bs4.BeautifulSoup(p.text, 'html.parser')
 		links = s.find_all('a')
 		for link in links:
@@ -67,8 +72,8 @@ class Website:
 				break
 		return out
 
-	def _get_page_text(self, page_link: str) -> str:
-		p = requests.get(page_link)
+	def get_page_text(self, page_link: str) -> str:
+		p = requests.get(page_link, verify=False)
 		soup = bs4.BeautifulSoup(p.text, 'html.parser')
 		[s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title', 'footer', 'li', 'table'])]
 		return '\n'.join(e.strip() for e in soup.getText().split('\n') if e.strip())
