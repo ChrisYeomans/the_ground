@@ -1,7 +1,11 @@
 from typing import List
 from website import Website
+<<<<<<< Updated upstream
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import sys, nltk, nltk.book
+=======
+import sys, nltk, nltk.book, collections
+>>>>>>> Stashed changes
 
 class Ground:
 	"""This class generates a number
@@ -19,7 +23,7 @@ class Ground:
 	lemmatized_tokens = []
 	tagged = {}
 	nltk_text = nltk.book.text1
-	stop_words = set()
+	stop_words = None
 
 	def __init__(self, text_file: str="", sites_file: str="sites.txt", keep_to_sites: bool=False, search_limit: int=10):
 		if text_file == "":
@@ -32,6 +36,45 @@ class Ground:
 		sys.stderr.write("Pre Processing\n")
 		self.pre_processing()
 		
+	def get_related_terms(self, word: str):
+		"""current_idea:
+		tokenize into sentences,
+		then the sentences into words.
+		After that filter the sentences
+		with stop_words, tag the 
+		tokens and lemmatize them.
+		Finally find sentences with 
+		the word to search and take
+		the words out of them into
+		a collection
+		"""
+		sents_of_interest = []
+		tagged_sents_of_interest = []
+		out_lst = []
+
+		# tokenize into sentences
+		sents = nltk.sent_tokenize(self.text)
+
+		# tokenize sentences into words and filter
+		# them for stopwords
+		for sent in sents:
+			sent = [w for w in nltk.word_tokenize(sent) if not w in self.stop_words]
+
+		for s in sents:
+			if word in s:
+				sents_of_interest.append(s)
+
+		# tag and lemmatize sents_of_interest
+		ltz = nltk.stem.WordNetLemmatizer()
+		for s in sents_of_interest:
+			print(s)
+			tagged_sents_of_interest.append([nltk.pos_tag(w) for w in s])
+
+		for s in range(len(sents_of_interest)):
+			for w in range(len(sents_of_interest[s])):
+				out_lst.append(ltz.lemmatize(tagged_sents_of_interest[s][w][0], get_wordnet_pos(tagged_sents_of_interest[s][w][1]))) 
+
+		return tagged_sents_of_interest
 
 	def pre_processing(self):
 		# Filtering stop words
@@ -45,7 +88,7 @@ class Ground:
 		self.tagged = nltk.pos_tag(self.tokens)
 	
 	def lemmatize_tokens(self):
-		lemmatize_tokens = tokens[:]
+		lemmatized_tokens = tokens[:]
 		ltz = nltk.stem.WordNetLemmatizer()
 		for i in range(len(self.tokens)):
 			self.lemmatized_tokens[i] = ltz.lemmatize(self.tagged[i][0], get_wordnet_pos(self.tagged[i][1]))
@@ -87,7 +130,7 @@ class Ground:
 			print(0)
 
 def get_wordnet_pos(word):
-    """Map POS tag to first character lemmatize() accepts"""
+    # Map POS tag to first character lemmatize() accepts
     tag = nltk.pos_tag([word])[0][1][0].upper()
     tag_dict = {"J": nltk.corpus.wordnet.ADJ,
                 "N": nltk.corpus.wordnet.NOUN,
@@ -97,6 +140,11 @@ def get_wordnet_pos(word):
     return tag_dict.get(tag, nltk.corpus.wordnet.NOUN)
 
 if __name__ == "__main__":
+<<<<<<< Updated upstream
 	gd = Ground(keep_to_sites=True, search_limit=1)
 	gd.get_sentiment("trump")
 	
+=======
+	g = Ground('text.txt')
+	print(g.get_related_terms('trump'))
+>>>>>>> Stashed changes
