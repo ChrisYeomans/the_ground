@@ -32,7 +32,8 @@ class Website:
 			try:
 				for link in unfollowed_links:
 					# exit if we have exceeded the limit
-					if limit and (len(followed_links) + len(unfollowed_links) + len(buffer_unfollowed_links) > limit):
+					if limit and (len(followed_links) + len(unfollowed_links) \
+						+ len(buffer_unfollowed_links) > limit):
 						return followed_links + unfollowed_links + buffer_unfollowed_links
 
 					# filling the buffer of unfollowed links
@@ -75,8 +76,13 @@ class Website:
 	def get_page_text(self, page_link: str) -> str:
 		p = requests.get(page_link, verify=False)
 		soup = bs4.BeautifulSoup(p.text, 'html.parser')
-		[s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title', 'footer', 'li', 'table'])]
-		return '\n'.join(e.strip() for e in soup.getText().split('\n') if e.strip())
+		[s.extract() for s in soup( \
+				['style', 'script', '[document]', 'head', 'title',
+				'footer', 'li', 'table', 'h1', 'h2', 'h3', 'h4',
+				'h5', 'h6', 'navbar', 'meta', 'link', 'noscript',
+				'a', 'nav', 'button', 'form'])]
+		return '\n'.join(e.strip() for e in soup.getText().split('\n') if \
+			len(e.strip().split()) > 1)
 
 
 if __name__ == "__main__":

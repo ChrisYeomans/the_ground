@@ -33,7 +33,7 @@ class Ground:
 		self.pre_processing()
 		
 	def get_related_terms(self, word: str):
-		"""current_idea:
+		"""Current Idea:
 		tokenize into sentences,
 		then the sentences into words.
 		After that filter the sentences
